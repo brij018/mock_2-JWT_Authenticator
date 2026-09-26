@@ -8,6 +8,8 @@ The idea was to go beyond basic login and registration and understand how authen
 
 It also includes API endpoints for managing users, registering admins and managers, and handling multiple active sessions.
 
+Render: https://mock-2-jwt-authenticator.onrender.com/
+
 ---
 
 ## ✨ What's Inside?
