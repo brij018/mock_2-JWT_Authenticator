@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
     },
+    confirm_password: {
+      type: String,
+    },
     role: {
       type: String,
       default: "admin",
@@ -39,9 +42,32 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
+  this.updated_date = new Date().toISOString();
+  if (!this.isNew && !this.created_date) {
+    this.created_date = new Date().toISOString();
+  }
+
+  if (
+    this.isModified("password") ||
+    this.isModified("confirm_password") ||
+    this.isNew
+  ) {
+    if (this.password !== this.confirm_password) {
+      const err = new Error("password and confirm_password must be same");
+      if (typeof next === "function") return next(err);
+      throw err;
+    }
+  }
+
+  if (!this.isModified("password")) {
+    if (typeof next === "function") return next();
+    return;
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  this.confirm_password = this.password;
+  if (typeof next === "function") next();
 });
 
 export default mongoose.model("User", userSchema);
