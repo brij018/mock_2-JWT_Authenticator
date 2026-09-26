@@ -1,6 +1,7 @@
 import User from "../model/User.js";
 import jwt from "jsonwebtoken";
 import HttpError from "../middleware/HttpError.js";
+import bcrypt from "bcrypt";
 
 const generateToken = async (user) => {
   const token = jwt.sign(
